@@ -131,8 +131,8 @@ bank-system/
 |----------|-------------|  
 | `loadClientsFromFile()` | Reads client data from file |  
 | `serializeClientData()` | Formats data for storage |  
-| `processTransaction()` | Handles financial operations |  
-| `inputValidation()` | Validates user input |  
+| `handleTransactions()` | Handles financial operations |  
+| `getValidPositiveNumber()` | Validates user input |  
 
 ---
 
