@@ -45,7 +45,7 @@
 ### 📦 Easy Installation 
 - **Simple setup** with detailed documentation
   
-🚀 Performance Optimized
+### 🚀 Performance Optimized
 - **Lightning-fast execution** with minimal overhead
 
 ---
