@@ -400,9 +400,6 @@ void displayTotalBalances() {
 	printTotalBalanceHeader();
 	displayClientBalances();
 }
-
-void handleTransactions();
-
 void handleTransactions() {
 	do {
 		system("cls");
