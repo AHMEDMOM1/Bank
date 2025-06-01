@@ -7,12 +7,12 @@
 const std::string DELIMITER = "#//#";
 const std::string FILE_NAME = "Bank.txt";
 
-enum class MainMenuOption {
-    Add = 1, View, Find, Delete, Update, Transaction, Exit
+enum MainMenuOption {
+    Add = 1, View, Find, Delete, Update, Transaction
 };
 
-enum class TransactionMenuOption {
-    Deposit = 1, Withdraw, TotalBalance, Exit
+enum TransactionMenuOption {
+    Deposit = 1, Withdraw, TotalBalance
 };
 
 struct ClientData {
