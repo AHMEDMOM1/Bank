@@ -432,8 +432,6 @@ void handleTransactions() {
 	} while (_getch());
 }
 
-void runBankingSystem();
-
 void runBankingSystem() {
 	do {
 		system("cls");
