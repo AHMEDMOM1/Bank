@@ -131,7 +131,7 @@ vector<ClientData> convertLineToClientData(const vector<string>& file_data) {
 }
 
 // Counts the number of lines in a file
-int countFileLines(string file_name) {
+int countFileLines(const string& file_name) {
 	ifstream input_file(file_name, ios::in);
 	int line_count = 0;
 	if (input_file) {
@@ -142,7 +142,7 @@ int countFileLines(string file_name) {
 }
 
 // Loads clients from a file into a vector
-vector<string> loadDataFromFile(const string file_name) {
+vector<string> loadDataFromFile(const string& file_name) {
 	ifstream input_file(file_name, ios::in);
 	vector<string> clients{};
 	if (input_file) {
@@ -202,7 +202,7 @@ void saveRecordDataToFile(const string& file_name, string& record_data_str) {
 }
 
 // Clears all contents of a file
-void deleteFileContents(const string file_name) {
+void deleteFileContents(const string& file_name) {
 	ofstream output_file(file_name, ios::out | ios::trunc);
 }
 
@@ -303,7 +303,7 @@ void displayClientList() {
 }
 
 // Enters a new unique account number
-string enterNewAccountNumber(const string file_name) {
+string enterNewAccountNumber(const string& file_name) {
 	vector<string> records = loadDataFromFile(file_name);
 	string account_number{};
 
