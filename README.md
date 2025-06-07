@@ -169,12 +169,6 @@ advanced-bank-system/
 ├── 📄 main.cpp                    # Main application entry point
 ├── 📄 Bank.txt                    # Client database file
 ├── 📄 users.txt                   # User credentials and permissions
-├── 📁 docs/                       # Documentation
-│   ├── 📄 API.md                  # Function documentation
-│   └── 📄 SECURITY.md             # Security guidelines
-├── 📁 examples/                   # Usage examples
-│   ├── 📄 sample_data.txt         # Sample client data
-│   └── 📄 user_scenarios.md       # Common use cases
 └── 📄 README.md                   # This documentation
 ```
 
@@ -225,15 +219,15 @@ Access: 63 (All permissions except Admin)
 ### Transaction Summary
 ```
 ═══════════════════════════════════════════════════════════════
-Client List (5) Client(s).
-
-| Account Number    | Client Name           | Balance              |
+                     Client List (5) Client(s).
+----------------------------------------------------------------
+| Account Number    | Client Name           | Balance          |
 |--------------------------------------------------------------|
-| 1.ACC001          | Ahmed Mohamed         | 15750.50            |
-| 2.ACC002          | Fatma Ali            | 8200.75             |
-| 3.ACC003          | Omar Hassan          | 12500.00            |
+| 1.ACC001          | Ahmed Mohamed        | 15750.50          |
+| 2.ACC002          | Fatma Ali            | 8200.75           |
+| 3.ACC003          | Omar Hassan          | 12500.00          |
 ═══════════════════════════════════════════════════════════════
-                        Total Balance = 36451.25
+                            Total Balance = 36451.25
 ```
 
 ## 🔒 Security Features
@@ -285,28 +279,6 @@ We welcome contributions! Please follow these guidelines:
 - 🔧 Performance optimizations
 - 📱 Cross-platform compatibility
 
-## 📜 License
-
-```
-MIT License
-
-Copyright (c) 2024 Advanced Bank Management System
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
-
 ## 🚀 Roadmap
 
 ### Version 2.0 (Coming Soon)
@@ -330,13 +302,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 > - 🔧 **Professional Database Systems** (PostgreSQL, MySQL)
 > - 🌐 **Network Security** (TLS/SSL)
 > - 🏛️ **Regulatory Compliance** (PCI DSS, SOX)
-
-## 📞 Support
-
-- 📧 **Email**: support@banksystem.dev
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/yourusername/advanced-bank-system/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/advanced-bank-system/discussions)
-- 📖 **Documentation**: [Wiki](https://github.com/yourusername/advanced-bank-system/wiki)
 
 ---
 
