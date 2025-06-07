@@ -7,6 +7,7 @@
 #include <cmath>
 #include <conio.h> // _getch
 
+using namespace std;
 
 // Constants for file names and delimiters
 const string DELIMITER = "#//#";
