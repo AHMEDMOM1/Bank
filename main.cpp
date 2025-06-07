@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -350,7 +351,7 @@ void addNewClient() {
 // Displays the main menu options
 void displayMainMenu() {
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n\n";
-	cout << createSeparatorLine('\t', 1) << "Welcome To Our Bank" << "\n\n";
+	cout << createSeparatorLine(' ', 8) << "Welcome To Our Bank" << "\n\n";
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
 	cout << " [1]. Add New Client" << endl;
 	cout << " [2]. View Client List" << endl;
@@ -422,7 +423,7 @@ void withdraw() {
 // Displays the transaction menu
 void displayTransactionMenu() {
 	cout << setw(40) << setfill('=') << '=' << setfill(' ') << "\n";
-	cout << createSeparatorLine('\t', 1) << "Transaction Menu Screen" << "\n";
+	cout << createSeparatorLine(' ', 9) << "Transaction Menu Screen" << "\n";
 	cout << setw(40) << setfill('=') << '=' << setfill(' ') << "\n";
 	cout << " [1]. Deposit" << endl;
 	cout << " [2]. Withdraw" << endl;
@@ -433,7 +434,6 @@ void displayTransactionMenu() {
 
 // Gets the user's transaction choice
 short getTransactionChoice() {
-	displayTransactionMenu();
 	short choice = getValidPositiveNumber("Choose One: ");
 	return choice;
 }
@@ -539,6 +539,7 @@ UserInfo login() {
 void handleTransactions() {
 	do {
 		system("cls");
+		displayTransactionMenu();
 		TransactionMenuOption choice = static_cast<TransactionMenuOption>(getTransactionChoice());
 		switch (choice) {
 		case TransactionMenuOption::Deposit:
