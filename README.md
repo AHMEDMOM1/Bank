@@ -88,7 +88,7 @@ mkdir logs
 ### Main Menu Interface
 ```
 ===================================
-       WELCOME TO OUR BANK
+        WELCOME TO OUR BANK
 ===================================
 [1] Add New Client
 [2] View Client List
@@ -105,7 +105,7 @@ mkdir logs
 ### User Management Menu
 ```
 ===================================
-    ---MANAGE USERS MENU---
+      ---MANAGE USERS MENU---
 ===================================
 [1] Add New User
 [2] View User List
@@ -119,7 +119,7 @@ mkdir logs
 ### Transaction Processing
 ```
 ========================================
-      TRANSACTION MENU SCREEN
+        TRANSACTION MENU SCREEN
 ========================================
 [1] Deposit
 [2] Withdraw
