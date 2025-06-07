@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -6,7 +7,6 @@
 #include <cmath>
 #include <conio.h> // _getch
 
-using namespace std;
 
 // Constants for file names and delimiters
 const string DELIMITER = "#//#";
@@ -178,15 +178,15 @@ string getValidAccountNumber(vector<string>& file_data) {
 }
 
 // Prints a header with a message
-void printHeader(string message) {
+void printHeader(const string& message, short number_letter = 1) {
 	cout << setw(35) << setfill('-') << '-' << endl;
-	cout << createSeparatorLine('\t', 1) << message << endl;
+	cout << createSeparatorLine(' ', number_letter) << message << endl;
 	cout << setw(35) << setfill('-') << '-' << "\n\n";
 }
 
 // Displays Client data by account number
 void displayClientData() {
-	printHeader("Find Client Screen");
+	printHeader("Find Client Screen", 8);
 
 	vector<string> clients = loadDataFromFile(CLIENT_FILE_NAME);
 
@@ -209,7 +209,7 @@ void deleteFileContents(const string file_name) {
 
 // Deletes a client account from the system
 void deleteClientAccount() {
-	printHeader("Delete Client Screen");
+	printHeader("Delete Client Screen", 8);
 
 	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
@@ -244,7 +244,7 @@ void editClientData(ClientData& client) {
 
 // Updates client data in the system
 void updateClientData() {
-	printHeader("Update Client Info Screen");
+	printHeader("Update Client Info Screen", 6);
 
 	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
@@ -347,7 +347,7 @@ void addNewClients() {
 
 // Adds a new client via the interface
 void addNewClient() {
-	printHeader("Add New Clients Screen");
+	printHeader("Add New Clients Screen", 7);
 	addNewClients();
 }
 
@@ -376,7 +376,7 @@ short getMainMenuChoice() {
 
 // Handles deposit operation
 void deposit() {
-	printHeader("Deposit Screen");
+	printHeader("Deposit Screen", 11);
 	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
 	string client_str{ getValidAccountNumber(records) };
@@ -399,7 +399,7 @@ void deposit() {
 
 // Handles withdraw operation
 void withdraw() {
-	printHeader("Withdraw Screen");
+	printHeader("Withdraw Screen", 10);
 	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
 	string client_str{ getValidAccountNumber(records) };
@@ -527,6 +527,7 @@ string getCorrectPassword(UserInfo user) {
 
 // Handles user login process
 UserInfo login() {
+	printHeader("Login Secreen", 11);
 	vector<string> file_data{ loadDataFromFile(USER_FILE_NAME) };
 	UserInfo user{};
 
@@ -626,7 +627,7 @@ string serializeUserToStr(UserInfo& user) {
 // Adds a new user to the system
 void addUser() {
 	UserInfo user{};
-	printHeader("Add New User");
+	printHeader("Add New User", 14);
 	do {
 		user.user_name = enterNewAccountNumber(USER_FILE_NAME);
 
@@ -688,7 +689,7 @@ void printUserData(vector<string>& user) {
 
 // Displays User data by username
 void displayUserData() {
-	printHeader("Find User Screen");
+	printHeader("Find User Screen", 9);
 
 	vector<string> users = loadDataFromFile(USER_FILE_NAME);
 
@@ -706,7 +707,7 @@ bool checkIsAdmin(UserInfo user) {
 
 // Deletes a user from the system
 void deleteUser() {
-	printHeader("Delete User Screen");
+	printHeader("Delete User Screen", 8);
 
 	vector<string> records = loadDataFromFile(USER_FILE_NAME);
 
@@ -745,18 +746,23 @@ UserInfo editUserData(UserInfo& user) {
 
 // Updates user data in the system
 void updateUserData() {
-	printHeader("Update User Info Screen");
+	printHeader("Update User Info Screen", 6);
 
 	vector<string> records = loadDataFromFile(USER_FILE_NAME);
 
 	string user_str{ getValidAccountNumber(records) };
 
 	vector<string>parsed_data{ parseRecordData(user_str) };
-	printUserData(parsed_data);
 
 	short required_account{ findValidAccount(records, parsed_data.front()) };
 
 	vector<UserInfo> users{ convertToUserVector(records) };
+
+	if (checkIsAdmin(users.at(required_account))) {
+		displayErrorMessage("You cannot update Admin!!");
+		return;
+	}
+	printUserData(parsed_data);
 
 	if (getUserApproval("Are You Sure You Want Update?: ")) {
 		users.at(required_account) = editUserData(users.at(required_account));
