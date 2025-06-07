@@ -281,6 +281,6 @@ We welcome contributions! Please follow these guidelines:
 
 ---
 
-**🔄 Last Updated**: December 2024 | **Version**: 1.5.0 | **Status**: Active Development
+**🔄 Last Updated**: June 2025 | **Status**: Active Development
 
 **⭐ Star this repository if you find it helpful!**
