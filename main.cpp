@@ -102,7 +102,7 @@ void printClientData(vector<string>& client) {
 }
 
 // Gets a string input from the user
-string getStringInput(string message) {
+string getStringInput(const char* message) {
 	string input;
 	cout << message;
 	getline(cin >> ws, input);
@@ -165,8 +165,7 @@ string getValidAccountNumber(vector<string>& file_data) {
 	short required_account{};
 
 	while (true) {
-		cout << "Record Account: ";
-		getline(cin >> ws, account_number);
+		account_number = getStringInput("Record Account: ");
 		required_account = findValidAccount(file_data, account_number);
 		if (required_account != string::npos) {
 			break;
@@ -197,7 +196,7 @@ void displayClientData() {
 }
 
 // Saves client data to the file
-void saveRecordDataToFile(string file_name, string& record_data_str) {
+void saveRecordDataToFile(const string& file_name, string& record_data_str) {
 	ofstream output_file(file_name, ios::app);
 	if (output_file) output_file << record_data_str << endl;
 }
@@ -234,11 +233,12 @@ void deleteClientAccount() {
 // Edits client data with user input
 void editClientData(ClientData& client) {
 	client.pin_code = getValidPositiveNumber("Enter Pin Code: ");
-	cout << "Enter Name: ";
+
 	cin.ignore(INT_MAX, '\n');
-	getline(cin >> ws, client.name);
-	cout << "Enter Phone: ";
-	getline(cin >> ws, client.phone_number);
+	client.name = getStringInput("Enter Name: ");
+
+	client.phone_number = getStringInput("Enter Phone: ");
+
 	client.balance = getValidPositiveNumber("Enter Account Balance: ");
 }
 
@@ -308,8 +308,7 @@ string enterNewAccountNumber(const string file_name) {
 	string account_number{};
 
 	while (true) {
-		cout << "Record Account: ";
-		getline(cin >> ws, account_number);
+		account_number = getStringInput("Record Account: ");
 		short pos = findValidAccount(records, account_number);
 		if (pos == -1) {
 			break;
@@ -331,12 +330,10 @@ void addNewClients() {
 		new_client.account_number = enterNewAccountNumber(CLIENT_FILE_NAME);
 		new_client.pin_code = getValidPositiveNumber("Enter Pin Code: ");
 
-		cout << "Enter Name: ";
 		cin.ignore(INT_MAX, '\n');
-		getline(cin >> ws, new_client.name);
+		new_client.name = getStringInput("Enter Name: ");
 
-		cout << "Enter Phone: ";
-		getline(cin >> ws, new_client.phone_number);
+		new_client.phone_number = getStringInput("Enter Phone: ");
 
 		new_client.balance = getValidPositiveNumber("Enter Account Balance: ");
 		string client{ serializeClientData(new_client) };
@@ -515,8 +512,7 @@ UserInfo getUserAccount(vector <string>& file_data) {
 string getCorrectPassword(UserInfo user) {
 	string password{};
 	while (true) {
-		cout << "Enter password: ";
-		getline(cin >> ws, password);
+		password = getStringInput("Enter password: ");
 		if (password == user.user_password) {
 			break;
 		}
@@ -631,8 +627,7 @@ void addUser() {
 	do {
 		user.user_name = enterNewAccountNumber(USER_FILE_NAME);
 
-		cout << "Enter Password: ";
-		getline(cin >> ws, user.user_password);
+		user.user_password = getStringInput("Enter Password: ");
 
 		user.total_access = getAccessForUser();
 
@@ -736,8 +731,8 @@ void deleteUser() {
 
 // Edits user data with new input
 UserInfo editUserData(UserInfo& user) {
-	cout << "Enter Password: ";
-	getline(cin >> ws, user.user_password);
+
+	user.user_password = getStringInput("Enter Password: ");
 
 	user.total_access = getAccessForUser();
 
