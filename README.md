@@ -79,7 +79,7 @@ mkdir logs
 1. Run the application
 2. Login with default admin credentials:
    - **Username**: `Admin`
-   - **Password**: `admin123`
+   - **Password**: `1234`
 3. Create additional user accounts as needed
 4. Configure user permissions
 
