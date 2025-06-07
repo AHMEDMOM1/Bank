@@ -37,7 +37,7 @@ struct ClientData {
 };
 
 // Gets a valid positive float from user input
-float getValidPositiveNumber(string message) {
+float getValidPositiveNumber(const char* message) {
 	float number{};
 	cout << message;
 	while (!(cin >> number) || number < 1) {
@@ -49,7 +49,7 @@ float getValidPositiveNumber(string message) {
 }
 
 // Gets user approval with Y/N response
-bool getUserApproval(string message) {
+bool getUserApproval(const char* message) {
 	char answer;
 	cout << message;
 	while (cin >> answer && !(toupper(answer) == 'Y' || toupper(answer) == 'N')) {
@@ -71,7 +71,7 @@ string serializeClientData(ClientData& client) {
 }
 
 // Displays an error message
-void displayErrorMessage(string message) {
+void displayErrorMessage(const char* message) {
 	cout << "\n\n" << message << "\n\n";
 }
 
@@ -177,7 +177,7 @@ string getValidAccountNumber(vector<string>& file_data) {
 }
 
 // Prints a header with a message
-void printHeader(const string& message, short number_letter = 1) {
+void printHeader(const char* message, short number_letter = 1) {
 	cout << setw(35) << setfill('-') << '-' << endl;
 	cout << createSeparatorLine(' ', number_letter) << message << endl;
 	cout << setw(35) << setfill('-') << '-' << "\n\n";
