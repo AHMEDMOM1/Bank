@@ -1,5 +1,3 @@
-سأقوم بتعديل التوثيق ليتطابق مع محتويات الكود الفعلي باللغة الإنجليزية:
-
 # 🏦 Bank Management System - Advanced C++ Console Application
 A comprehensive, secure, and efficient banking system for managing client accounts, user permissions, and financial transactions with enterprise-grade features.
 
