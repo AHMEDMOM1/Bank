@@ -537,7 +537,7 @@ string getCorrectPassword(UserInfo user) {
 
 // Handles user login process
 UserInfo userLogin() {
-	printHeader("User Login Screen", 9);
+	printHeader("Login Page", 13);
 	UserInfo user{};
 
 	// read user name
@@ -918,7 +918,7 @@ void printQuickWithdrawMenu() {
 
 // Handles client login process
 ClientData clientLogin() {
-	printHeader("Welcome Our Bank", 10);
+	printHeader("Login Page", 13);
 	ClientData clientData{};
 	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
 
