@@ -147,7 +147,7 @@ Choice [1]<-->[2]:
 ```
 ===================================
 
-        Welcome To Our Bank
+          User Main Menu
 
 ===================================
 [1]. Add New Client
