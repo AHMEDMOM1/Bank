@@ -309,13 +309,13 @@ Successful, Your Balance Now Is: 15650.50
       Client List (3) Client(s).
 
 ------------------------------------------------------------------------------------------------------------------------
-| Account Number                | Client Name                          | Balance                                 |
+| Account Number                | Client Name                          | Balance                                       |
 ------------------------------------------------------------------------------------------------------------------------
-| 1.ACC001                      | Ahmed Mohamed                        | 15750.50                                |
-| 2.ACC002                      | Fatma Ali                            | 8200.75                                 |
-| 3.ACC003                      | Omar Hassan                          | 12500.00                                |
+| 1.ACC001                      | Ahmed Mohamed                        | 15750.50                                      |
+| 2.ACC002                      | Fatma Ali                            | 8200.75                                       |
+| 3.ACC003                      | Omar Hassan                          | 12500.00                                      |
 ------------------------------------------------------------------------------------------------------------------------
-                                Total Balance = 36451.25
+                                                         Total Balance = 36451.25
 ```
 
 ## 🔒 Security Features
@@ -396,6 +396,6 @@ We welcome contributions! Please follow these guidelines:
 
 ---
 
-**🔄 Last Updated**: December 2024 | **Status**: Active Development
+**🔄 Last Updated**: June 2025 | **Status**: Active Development
 
 **⭐ Star this repository if you find it helpful!**
