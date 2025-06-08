@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <cmath>
@@ -19,6 +20,12 @@ typedef MainMenuOption ManageUserMenuOption; // Fixed naming convention
 
 // Enum for transaction menu options
 enum TransactionMenuOption { Deposit = 1, Withdraw, TotalBalance };
+
+// Enum for client menu options
+enum ClientMenuOption { QuickWithdraw = 1, NormalWithdraw, ClientDeposit, ShowBalance, ClientLogOut };
+
+// Enum for member types
+enum Members { Client = 1, User };
 
 // Structure to hold user information
 struct UserInfo {
@@ -76,16 +83,16 @@ void displayErrorMessage(const char* message) {
 }
 
 // Splits a string record into individual fields using delimiter
-vector<string> parseRecordData(string client_line) {
+vector<string> parseRecordData(string record_info) {
 	vector<string> parsed_data;
 	string word;
 	int pos;
-	while ((pos = client_line.find(DELIMITER)) != string::npos) {
-		word = client_line.substr(0, pos);
+	while ((pos = record_info.find(DELIMITER)) != string::npos) {
+		word = record_info.substr(0, pos);
 		if (!word.empty()) parsed_data.push_back(word);
-		client_line.erase(0, pos + DELIMITER.length());
+		record_info.erase(0, pos + DELIMITER.length());
 	}
-	if (!client_line.empty()) parsed_data.push_back(client_line);
+	if (!record_info.empty()) parsed_data.push_back(record_info);
 	return parsed_data;
 }
 
@@ -109,25 +116,35 @@ string getStringInput(const char* message) {
 	return input;
 }
 
+// Loads data from a file into a vector of strings
+vector<string> loadDataFromFile(const string& file_name) {
+	ifstream input_file(file_name, ios::in);
+	vector<string> data{};
+	if (input_file) {
+		string line;
+		while (getline(input_file, line)) {
+			data.push_back(line);
+		}
+	}
+	return data;
+}
+
 // Searches for a client by account number and returns the index
 short findValidAccount(vector<string>& file_data, string account_number) {
-	for (short i{}; i < file_data.size(); i++) {
+	for (int i{}; i < file_data.size(); i++) {
 		vector <string> parsed_data = parseRecordData(file_data.at(i));
-		if (parsed_data.front() == account_number) return i; // account_name in first the line
+		if (parsed_data.front() == account_number) return i;
 	}
 	return -1;
 }
 
-// Converts file lines to ClientData structures
-vector<ClientData> convertLineToClientData(const vector<string>& file_data) {
-	vector<ClientData> clients{};
-	for (int i{}; i < file_data.size(); i++) {
-		vector<string> client_fields = parseRecordData(file_data.at(i));
-
-		clients.push_back({ client_fields.at(0) ,(unsigned short)stoi(client_fields.at(1)),
-		client_fields.at(2), client_fields.at(3), stof(client_fields.at(4)) });// struct members
-	}
-	return clients;
+// Converts a single file line to ClientData structure
+ClientData convertLineToClientData(string& file_data) {
+	ClientData client{};
+	vector<string> client_fields = parseRecordData(file_data);
+	client = { client_fields.at(0) ,(unsigned short)stoi(client_fields.at(1)),
+	client_fields.at(2), client_fields.at(3), stof(client_fields.at(4)) };
+	return client;
 }
 
 // Counts the number of lines in a file
@@ -139,19 +156,6 @@ int countFileLines(const string& file_name) {
 		while (getline(input_file, line)) line_count++;
 	}
 	return line_count;
-}
-
-// Loads clients from a file into a vector
-vector<string> loadDataFromFile(const string& file_name) {
-	ifstream input_file(file_name, ios::in);
-	vector<string> clients{};
-	if (input_file) {
-		string line;
-		while (getline(input_file, line)) {
-			clients.push_back(line);
-		}
-	}
-	return clients;
 }
 
 // Creates a separator line with a character
@@ -176,7 +180,7 @@ string getValidAccountNumber(vector<string>& file_data) {
 	return file_data.at(required_account);
 }
 
-// Prints a header with a message
+// Prints a header with a message and spacing
 void printHeader(const char* message, short number_letter = 1) {
 	cout << setw(35) << setfill('-') << '-' << endl;
 	cout << createSeparatorLine(' ', number_letter) << message << endl;
@@ -186,16 +190,15 @@ void printHeader(const char* message, short number_letter = 1) {
 // Displays Client data by account number
 void displayClientData() {
 	printHeader("Find Client Screen", 8);
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
 
-	vector<string> clients = loadDataFromFile(CLIENT_FILE_NAME);
-
-	string client_str{ getValidAccountNumber(clients) };
+	string client_str{ getValidAccountNumber(clients_data) };
 	vector<string>parsed_data_client{ parseRecordData(client_str) };
 
 	printClientData(parsed_data_client);
 }
 
-// Saves client data to the file
+// Saves record data to the file
 void saveRecordDataToFile(const string& file_name, string& record_data_str) {
 	ofstream output_file(file_name, ios::app);
 	if (output_file) output_file << record_data_str << endl;
@@ -206,18 +209,29 @@ void deleteFileContents(const string& file_name) {
 	ofstream output_file(file_name, ios::out | ios::trunc);
 }
 
+// Stores all client data from file into a vector of ClientData structures
+vector<ClientData> storeClientDataInVector() {
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+
+	vector<ClientData> clients{};
+	for (int i{}; i < clients_data.size(); i++) {
+		clients.push_back(convertLineToClientData(clients_data.at(i)));
+	}
+
+	return clients;
+}
+
 // Deletes a client account from the system
 void deleteClientAccount() {
 	printHeader("Delete Client Screen", 8);
 
-	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
-
-	string client_str{ getValidAccountNumber(records) };
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+	string client_str{ getValidAccountNumber(clients_data) };
 	vector<string>parsed_data{ parseRecordData(client_str) };
 	printClientData(parsed_data);
 
-	short required_account{ findValidAccount(records, parsed_data.front()) };
-	vector<ClientData>clients{ convertLineToClientData(records) };
+	short required_account{ findValidAccount(clients_data, parsed_data.front()) };
+	vector<ClientData>clients{ storeClientDataInVector() };
 
 	if (getUserApproval("Are You Sure You Want Delete?: ")) {
 		clients.erase(clients.begin() + required_account);
@@ -246,15 +260,14 @@ void editClientData(ClientData& client) {
 void updateClientData() {
 	printHeader("Update Client Info Screen", 6);
 
-	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
-
-	string client_str{ getValidAccountNumber(records) };
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+	string client_str{ getValidAccountNumber(clients_data) };
 	vector<string>parsed_data{ parseRecordData(client_str) };
 	printClientData(parsed_data);
 
-	short required_account{ findValidAccount(records, parsed_data.front()) };
+	short required_account{ findValidAccount(clients_data, parsed_data.front()) };
 
-	vector<ClientData> clients{ convertLineToClientData(records) };
+	vector<ClientData> clients{ storeClientDataInVector() };
 
 	if (getUserApproval("Are You Sure You Want Update?: ")) {
 		editClientData(clients.at(required_account));
@@ -303,13 +316,12 @@ void displayClientList() {
 }
 
 // Enters a new unique account number
-string enterNewAccountNumber(const string& file_name) {
-	vector<string> records = loadDataFromFile(file_name);
+string enterNewAccountNumber(vector<string>& file_data) {
 	string account_number{};
 
 	while (true) {
 		account_number = getStringInput("Record Account: ");
-		short pos = findValidAccount(records, account_number);
+		short pos = findValidAccount(file_data, account_number);
 		if (pos == -1) {
 			break;
 		}
@@ -318,16 +330,17 @@ string enterNewAccountNumber(const string& file_name) {
 	return account_number;
 }
 
-// Adds new clients to the system
+// Adds multiple new clients to the system
 void addNewClients() {
 	short number_of_clients = getValidPositiveNumber("\nHow many clients do you want to add: ");
 	static int client_counter = 1;
 
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
 	for (int i = 0; i < number_of_clients; i++) {
 		ClientData new_client{};
 		cout << "\nPerson." << (client_counter++) << ' ';
 
-		new_client.account_number = enterNewAccountNumber(CLIENT_FILE_NAME);
+		new_client.account_number = enterNewAccountNumber(clients_data);
 		new_client.pin_code = getValidPositiveNumber("Enter Pin Code: ");
 
 		cin.ignore(INT_MAX, '\n');
@@ -374,14 +387,15 @@ short getMainMenuChoice() {
 // Handles deposit operation
 void deposit() {
 	printHeader("Deposit Screen", 11);
-	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
-	string client_str{ getValidAccountNumber(records) };
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+
+	string client_str{ getValidAccountNumber(clients_data) };
 	vector<string>parsed_data{ parseRecordData(client_str) };
 	printClientData(parsed_data);
 
-	short required_account{ findValidAccount(records, parsed_data.front()) };
-	vector<ClientData>clients = convertLineToClientData(records);
+	short required_account{ findValidAccount(clients_data, parsed_data.front()) };
+	vector<ClientData>clients = storeClientDataInVector();
 
 	if (getUserApproval("Are You Sure You Want Deposit?: ")) {
 		float amount{ getValidPositiveNumber("Enter Value You need: ") };
@@ -397,14 +411,15 @@ void deposit() {
 // Handles withdraw operation
 void withdraw() {
 	printHeader("Withdraw Screen", 10);
-	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
 
-	string client_str{ getValidAccountNumber(records) };
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+
+	string client_str{ getValidAccountNumber(clients_data) };
 	vector<string>parsed_data{ parseRecordData(client_str) };
 	printClientData(parsed_data);
 
-	short required_account{ findValidAccount(records, parsed_data.front()) };
-	vector<ClientData>clients = convertLineToClientData(records);
+	short required_account{ findValidAccount(clients_data, parsed_data.front()) };
+	vector<ClientData>clients = storeClientDataInVector();
 
 	if (getUserApproval("Are You Sure You Want Withdraw?: ")) {
 		float amount{};
@@ -449,8 +464,8 @@ void printTotalBalanceHeader() {
 	cout << setw(120) << setfill('-') << '-' << setfill(' ') << endl;
 }
 
-// Displays client balances
-void displayClientBalances() {
+// Displays client balances body section
+void displayClientBalancesBody() {
 	string line;
 	ifstream input_file(CLIENT_FILE_NAME, ios::in);
 	for (short i = 1; getline(input_file, line); i++) {
@@ -464,8 +479,7 @@ void displayClientBalances() {
 // Calculates total balance of all clients
 float calculateTotalBalance() {
 	float total = 0;
-	vector<string> records = loadDataFromFile(CLIENT_FILE_NAME);
-	vector<ClientData>clients = convertLineToClientData(records);
+	vector<ClientData>clients = storeClientDataInVector();
 
 	for (size_t i = 0; i < clients.size(); i++) total += clients.at(i).balance;
 	return total;
@@ -480,7 +494,7 @@ void printTotalBalance() {
 // Displays total balances of all clients
 void displayTotalBalances() {
 	printTotalBalanceHeader();
-	displayClientBalances();
+	displayClientBalancesBody();
 }
 
 // Converts file data to UserInfo vector
@@ -502,8 +516,9 @@ UserInfo convertToUserStruct(string& user_data) {
 }
 
 // Gets user account from file data
-UserInfo getUserAccount(vector <string>& file_data) {
-	string user_string{ getValidAccountNumber(file_data) };
+UserInfo getUserAccount() {
+	vector<string> users_data{ loadDataFromFile(USER_FILE_NAME) };
+	string user_string{ getValidAccountNumber(users_data) };
 	return convertToUserStruct(user_string);
 }
 
@@ -521,13 +536,12 @@ string getCorrectPassword(UserInfo user) {
 }
 
 // Handles user login process
-UserInfo login() {
-	printHeader("Login Secreen", 11);
-	vector<string> file_data{ loadDataFromFile(USER_FILE_NAME) };
+UserInfo userLogin() {
+	printHeader("User Login Screen", 9);
 	UserInfo user{};
 
 	// read user name
-	user = getUserAccount(file_data);
+	user = getUserAccount();
 
 	// read user password
 	user.user_password = getCorrectPassword(user);
@@ -624,8 +638,9 @@ string serializeUserToStr(UserInfo& user) {
 void addUser() {
 	UserInfo user{};
 	printHeader("Add New User", 14);
+	vector<string> users_data{ loadDataFromFile(USER_FILE_NAME) };
 	do {
-		user.user_name = enterNewAccountNumber(USER_FILE_NAME);
+		user.user_name = enterNewAccountNumber(users_data);
 
 		user.user_password = getStringInput("Enter Password: ");
 
@@ -686,9 +701,9 @@ void printUserData(vector<string>& user) {
 void displayUserData() {
 	printHeader("Find User Screen", 9);
 
-	vector<string> users = loadDataFromFile(USER_FILE_NAME);
+	vector<string> users_data{ loadDataFromFile(USER_FILE_NAME) };
 
-	string user_str{ getValidAccountNumber(users) };
+	string user_str{ getValidAccountNumber(users_data) };
 
 	vector<string>parsed_data_client{ parseRecordData(user_str) };
 
@@ -704,13 +719,13 @@ bool checkIsAdmin(UserInfo user) {
 void deleteUser() {
 	printHeader("Delete User Screen", 8);
 
-	vector<string> records = loadDataFromFile(USER_FILE_NAME);
+	vector<string> users_data{ loadDataFromFile(USER_FILE_NAME) };
 
-	string user_str{ getValidAccountNumber(records) };
+	string user_str{ getValidAccountNumber(users_data) };
 	vector<string>parsed_data{ parseRecordData(user_str) };
 
-	vector<UserInfo> users{ convertToUserVector(records) };
-	short required_account{ findValidAccount(records, parsed_data.front()) };
+	vector<UserInfo> users{ convertToUserVector(users_data) };
+	short required_account{ findValidAccount(users_data, parsed_data.front()) };
 
 	if (checkIsAdmin(users.at(required_account))) {
 		displayErrorMessage("You cannot delete Admin!!");
@@ -731,11 +746,8 @@ void deleteUser() {
 
 // Edits user data with new input
 UserInfo editUserData(UserInfo& user) {
-
 	user.user_password = getStringInput("Enter Password: ");
-
 	user.total_access = getAccessForUser();
-
 	return user;
 }
 
@@ -743,15 +755,15 @@ UserInfo editUserData(UserInfo& user) {
 void updateUserData() {
 	printHeader("Update User Info Screen", 6);
 
-	vector<string> records = loadDataFromFile(USER_FILE_NAME);
+	vector<string> users_data{ loadDataFromFile(USER_FILE_NAME) };
 
-	string user_str{ getValidAccountNumber(records) };
+	string user_str{ getValidAccountNumber(users_data) };
 
 	vector<string>parsed_data{ parseRecordData(user_str) };
 
-	short required_account{ findValidAccount(records, parsed_data.front()) };
+	short required_account{ findValidAccount(users_data, parsed_data.front()) };
 
-	vector<UserInfo> users{ convertToUserVector(records) };
+	vector<UserInfo> users{ convertToUserVector(users_data) };
 
 	if (checkIsAdmin(users.at(required_account))) {
 		displayErrorMessage("You cannot update Admin!!");
@@ -807,7 +819,9 @@ void userManageList() {
 }
 
 // Checks if user has access to specific menu option
-bool checkIfHasAccess(short total_access, short choice) {
+bool checkIfHasAccess(short total_access, MainMenuOption choice) {
+	if (total_access == -1 || choice >= MainMenuOption::LogOut) return true;
+
 	for (short i{ 0x40 }; i >= pow(2, choice - 1); i /= 2) {
 		if (total_access == 0) return false;
 		if (total_access >= i) total_access -= i;
@@ -815,13 +829,13 @@ bool checkIfHasAccess(short total_access, short choice) {
 	return total_access == 0;
 }
 
-// Runs the main banking system
-void runBankingSystem(const UserInfo& user) {
+// Runs the main banking system for users
+void userList(const UserInfo& user) {
 	do {
 		system("cls");
 		displayMainMenu();
 		MainMenuOption choice = static_cast<MainMenuOption>(getMainMenuChoice());
-		if (!(user.total_access == -1 || checkIfHasAccess(user.total_access, choice))) {
+		if (!checkIfHasAccess(user.total_access, choice)) {
 			cout << "You don't have access for this choice!!";
 			continue;
 		}
@@ -852,15 +866,11 @@ void runBankingSystem(const UserInfo& user) {
 		case MainMenuOption::Manage:
 			system("cls");
 			userManageList();
-			return runBankingSystem(user);
+			return userList(user);
 		case MainMenuOption::LogOut:
 			system("cls");
-			return runBankingSystem(login());
+			return userList(userLogin());
 		default:
-			system("cls");
-			cout << setw(48) << setfill('~') << '~' << endl;
-			cout << "Thank you for using our banking system. Goodbye!" << endl;
-			cout << setw(48) << setfill('~') << '~' << endl;
 			return;
 		}
 		cout << "\n\n";
@@ -870,12 +880,218 @@ void runBankingSystem(const UserInfo& user) {
 	} while (_getch());
 }
 
-// Starts the banking application
-void start() {
-	runBankingSystem(login());
+// Prints the login page interface
+void printLoginPage() {
+	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=') << '=' << createSeparatorLine(' ', 10) << setw(30) << '=' << setfill(' ') << endl;
+	cout << createSeparatorLine(' ', 24) << "||" << createSeparatorLine(' ', 11) << "Client" << createSeparatorLine(' ', 9) << "||" << createSeparatorLine(' ', 10) << "||"
+		<< createSeparatorLine(' ', 12) << "User" << createSeparatorLine(' ', 10) << "||" << endl;
+	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=') << '=' << createSeparatorLine(' ', 10) << setw(30) << '=' << setfill(' ') << "\n\n";
+	cout << createSeparatorLine(' ', 13) << setw(90) << setfill('-') << '-' << setfill(' ') << endl;
+	cout << createSeparatorLine(' ', 13);
+}
+
+// Prints the client ATM menu
+void printClientATMMenu() {
+	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
+	cout << createSeparatorLine(' ', 8) << "ATM Menu Screen" << "\n";
+	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
+	cout << " [1]. Quick Withdraw" << endl;
+	cout << " [2]. Normal Withdraw" << endl;
+	cout << " [3]. Deposit" << endl;
+	cout << " [4]. Check Balance" << endl;
+	cout << " [5]. LogOut" << endl;
+	cout << " [6]. Exit" << endl;
+	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n\n";
+}
+
+// Prints quick withdraw money options
+void printQuickWithdrawMenu() {
+	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
+	cout << createSeparatorLine(' ', 8) << "Quick Withdraw Screen" << "\n";
+	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
+	cout << "[1].20$" << setw(20) << right << "[2].50$" << endl;
+	cout << "[3].100$" << setw(20) << right << "[4].200$" << endl;
+	cout << "[5].400$" << setw(20) << right << "[6].800$" << endl;
+	cout << "[7].1600$" << setw(20) << right << "[8].4000$" << endl;
+	cout << setw(35) << setfill('=') << '=' << setfill(' ');
+}
+
+// Handles client login process
+ClientData clientLogin() {
+	printHeader("Welcome Our Bank", 10);
+	ClientData clientData{};
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+
+	while (true) {
+		string account_number{ getStringInput("Account Number: ") };
+		short pinCode = getValidPositiveNumber("Pin Code: ");
+
+		short index{ findValidAccount(clients_data, account_number) };
+
+		if (index == -1) {
+			displayErrorMessage("Account Number / Pin Code Incorrect!!");
+			continue;
+		}
+		clientData = convertLineToClientData(clients_data.at(index));
+		if (clientData.pin_code != pinCode) {
+			displayErrorMessage("Account Number / Pin Code Incorrect!!");
+			continue;
+		}
+		break;
+	}
+
+	return clientData;
+}
+
+// Returns valid balance for withdrawal
+float getValidBalanceForWithdraw(float requestedMoney, float& balance) {
+	do {
+		requestedMoney = getValidPositiveNumber("Withdraw an amount not exceeding the balance: ");
+	} while (requestedMoney > balance);
+
+	return requestedMoney;
+}
+
+// Handles quick withdraw functionality
+void quickWithdraw(ClientData& client) {
+	do {
+		system("cls");
+		printQuickWithdrawMenu();
+		printf("\nYour Total Balance Now is: %.2f\n\n", client.balance);
+		short choice = getValidPositiveNumber("Choice one: ");
+
+		float amounts[] = { 0, 20, 50, 100, 200, 400, 800, 1600, 4000 };
+
+		if (choice >= 1 && choice <= 8) {
+			if (amounts[choice] <= client.balance) {
+				client.balance -= amounts[choice];
+				printf("\nSuccessful, Your Balance Now Is: %.2f\n", client.balance);
+			}
+			else {
+				displayErrorMessage("Insufficient balance!");
+			}
+		}
+		else {
+			cout << setw(20) << setfill('+') << '+' << setfill(' ') << endl;
+			cout << "Choice from [1] -> [8]: " << endl;
+			cout << setw(20) << setfill('+') << '+' << setfill(' ') << endl;
+		}
+	} while (getUserApproval("Do You Need Withdraw More?"));
+}
+
+// Handles normal withdraw functionality
+void normalWithdraw(ClientData& client) {
+	float withdrawAmount{};
+	printHeader("Withdraw Screen", 10);
+	printf("Your Total Balance is: %.2f\n\n", client.balance);
+	client.balance -= getValidBalanceForWithdraw(withdrawAmount, client.balance);
+	printf("Successful, Your Balance Now Is: %.2f\n", client.balance);
+}
+
+// Handles client deposit functionality
+void clientDeposit(ClientData& client) {
+	printHeader("Deposit Menu Screen", 9);
+	printf("Your Total Balance Now Is: %.2f\n\n", client.balance);
+	float depositAmount{ getValidPositiveNumber("How Much Do You Need To Deposit: ") };
+	client.balance += depositAmount;
+	printf("Successful, Your Balance Now Is: %.2f", client.balance);
+}
+
+// Shows client balance
+void showBalance(ClientData& client) {
+	printHeader("Total Balance Screen", 8);
+	printf("Your Balance is: %.2f", client.balance);
+}
+
+// Saves updated client data back to file
+void resaveClientData(ClientData& client) {
+	vector<string> clients_data = loadDataFromFile(CLIENT_FILE_NAME);
+	short index = findValidAccount(clients_data, client.account_number);
+
+	clients_data.erase(clients_data.begin() + index);
+	string client_str{ serializeClientData(client) };
+
+	clients_data.insert(clients_data.begin() + index, client_str);
+
+	deleteFileContents(CLIENT_FILE_NAME);
+	for (int i{}; i < clients_data.size(); i++) {
+		saveRecordDataToFile(CLIENT_FILE_NAME, clients_data.at(i));
+	}
+}
+
+// Manages client operations menu
+void clientList(ClientData client) {
+	do {
+		system("cls");
+		printClientATMMenu();
+		ClientMenuOption choice{ (ClientMenuOption)getValidPositiveNumber("Choice one: ") };
+		switch (choice)
+		{
+		case QuickWithdraw:
+			system("cls");
+			quickWithdraw(client);
+			break;
+		case NormalWithdraw:
+			system("cls");
+			normalWithdraw(client);
+			break;
+		case ClientDeposit:
+			system("cls");
+			clientDeposit(client);
+			break;
+		case ShowBalance:
+			system("cls");
+			showBalance(client);
+			break;
+		case ClientLogOut:
+			system("cls");
+			resaveClientData(client);
+			return clientList(clientLogin());
+		default:
+			return resaveClientData(client);
+		}
+		cout << "\n\n";
+		cout << setw(50) << setfill('+') << '+' << endl;
+		cout << "Press any character to return to menu: " << endl;
+		cout << setw(50) << setfill('+') << '+' << endl;
+	} while (_getch());
+}
+
+// Prints exit message
+void printEndMessage() {
+	system("cls");
+	cout << setw(30) << setfill('+') << '+' << setfill(' ') << endl;
+	cout << setw(20) << right << "Good Bye!!" << endl;
+	cout << setw(30) << setfill('+') << '+' << setfill(' ') << endl;
+}
+
+// Handles main login page functionality
+void loginPage() {
+	short choice{};
+	do {
+		system("cls");
+		printLoginPage();
+		do {
+			choice = getValidPositiveNumber("Choice [1]<-->[2]: ");
+		} while (choice > 2 || choice < 1);
+
+		switch (choice)
+		{
+		case Members::Client:
+			system("cls");
+			clientList(clientLogin());
+			break;
+		case Members::User:
+			system("cls");
+			userList(userLogin());
+			break;
+		}
+	} while (getUserApproval("Do you need to go to login again?"));
+
+	printEndMessage();
 }
 
 int main() {
-	start();
+	loginPage();
 	return 0;
 }
