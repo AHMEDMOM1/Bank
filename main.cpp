@@ -11,8 +11,8 @@ using namespace std;
 
 // Constants for file names and delimiters
 const string DELIMITER = "#//#";
-const string CLIENT_FILE_NAME = "Bank.txt";
-const string USER_FILE_NAME = "users.txt";
+const string CLIENT_FILE_NAME = "Bank1.txt";
+const string USER_FILE_NAME = "users1.txt";
 
 // Enum for main menu options
 enum MainMenuOption { Add = 1, View, Find, Delete, Update, Transaction, Manage, LogOut };
@@ -364,7 +364,7 @@ void addNewClient() {
 // Displays the main menu options
 void displayMainMenu() {
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n\n";
-	cout << createSeparatorLine(' ', 8) << "Welcome To Our Bank" << "\n\n";
+	cout << createSeparatorLine(' ', 11) << "User Main Menu" << "\n\n";
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
 	cout << " [1]. Add New Client" << endl;
 	cout << " [2]. View Client List" << endl;
@@ -891,9 +891,9 @@ void printLoginPage() {
 }
 
 // Prints the client ATM menu
-void printClientATMMenu() {
+void printClientATMMenu(string name_client) {
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
-	cout << createSeparatorLine(' ', 8) << "ATM Menu Screen" << "\n";
+	cout << createSeparatorLine(' ', 8 - name_client.size()/2) << name_client << " Welcome to Our Bank" << "\n";
 	cout << setw(35) << setfill('=') << '=' << setfill(' ') << "\n";
 	cout << " [1]. Quick Withdraw" << endl;
 	cout << " [2]. Normal Withdraw" << endl;
@@ -1023,7 +1023,7 @@ void resaveClientData(ClientData& client) {
 void clientList(ClientData client) {
 	do {
 		system("cls");
-		printClientATMMenu();
+		printClientATMMenu(client.name);
 		ClientMenuOption choice{ (ClientMenuOption)getValidPositiveNumber("Choice one: ") };
 		switch (choice)
 		{
