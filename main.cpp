@@ -11,8 +11,8 @@ using namespace std;
 
 // Constants for file names and delimiters
 const string DELIMITER = "#//#";
-const string CLIENT_FILE_NAME = "Bank.txt";
-const string USER_FILE_NAME = "users.txt";
+const string CLIENT_FILE_NAME = "Bank1.txt";
+const string USER_FILE_NAME = "users1.txt";
 
 // Enum for main menu options
 enum MainMenuOption { Add = 1, View, Find, Delete, Update, Transaction, Manage, LogOut };
@@ -943,10 +943,20 @@ ClientData clientLogin() {
 	return clientData;
 }
 
+//Returns a valid number that is a multiple of five for withdrawal
+int getNumThatMultOfFive() {
+	int requestedMoney{};
+	do {
+		requestedMoney = getValidPositiveNumber("Enter an amount multiple of 5's: ");
+	} while (requestedMoney % 5 != 0);
+	return requestedMoney;
+}
+
 // Returns valid balance for withdrawal
 float getValidBalanceForWithdraw(float requestedMoney, float& balance) {
 	do {
 		requestedMoney = getValidPositiveNumber("Withdraw an amount not exceeding the balance: ");
+		requestedMoney = getNumThatMultOfFive();
 	} while (requestedMoney > balance);
 
 	return requestedMoney;
@@ -992,7 +1002,7 @@ void normalWithdraw(ClientData& client) {
 void clientDeposit(ClientData& client) {
 	printHeader("Deposit Menu Screen", 9);
 	printf("Your Total Balance Now Is: %.2f\n\n", client.balance);
-	float depositAmount{ getValidPositiveNumber("How Much Do You Need To Deposit: ") };
+	float depositAmount = getNumThatMultOfFive();
 	client.balance += depositAmount;
 	printf("Successful, Your Balance Now Is: %.2f", client.balance);
 }
