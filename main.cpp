@@ -944,19 +944,20 @@ ClientData clientLogin() {
 }
 
 //Returns a valid number that is a multiple of five for withdrawal
-int getNumThatMultOfFive() {
-	int requestedMoney{};
-	do {
+void getNumThatMultOfFive(int& requestedMoney) {
+
+	while (requestedMoney % 5 != 0) {
 		requestedMoney = getValidPositiveNumber("Enter an amount multiple of 5's: ");
-	} while (requestedMoney % 5 != 0);
-	return requestedMoney;
+	}
+
+	return;
 }
 
 // Returns valid balance for withdrawal
-float getValidBalanceForWithdraw(float requestedMoney, float& balance) {
+float getValidBalanceForWithdraw(int requestedMoney, float& balance) {
 	do {
 		requestedMoney = getValidPositiveNumber("Withdraw an amount not exceeding the balance: ");
-		requestedMoney = getNumThatMultOfFive();
+		getNumThatMultOfFive(requestedMoney);
 	} while (requestedMoney > balance);
 
 	return requestedMoney;
@@ -1000,10 +1001,15 @@ void normalWithdraw(ClientData& client) {
 
 // Handles client deposit functionality
 void clientDeposit(ClientData& client) {
+
 	printHeader("Deposit Menu Screen", 9);
 	printf("Your Total Balance Now Is: %.2f\n\n", client.balance);
-	float depositAmount = getNumThatMultOfFive();
+
+	int depositAmount = getValidPositiveNumber("Enter the amount: ");
+	getNumThatMultOfFive(depositAmount);
+
 	client.balance += depositAmount;
+
 	printf("Successful, Your Balance Now Is: %.2f", client.balance);
 }
 
