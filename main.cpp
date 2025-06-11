@@ -16,7 +16,7 @@ const string USER_FILE_NAME = "users1.txt";
 
 // Enum for main menu options
 enum MainMenuOption { Add = 1, View, Find, Delete, Update, Transaction, Manage, LogOut };
-typedef MainMenuOption ManageUserMenuOption; // Fixed naming convention
+using ManageUserMenuOption = MainMenuOption ; // Fixed naming convention
 
 // Enum for transaction menu options
 enum TransactionMenuOption { Deposit = 1, Withdraw, TotalBalance };
@@ -67,7 +67,7 @@ bool getUserApproval(const char* message) {
 }
 
 // Converts client data structure to string format for file storage
-string serializeClientData(ClientData& client) {
+string serializeClientData(const ClientData& client) {
 	string client_data_str{};
 	client_data_str = client.account_number + DELIMITER;
 	client_data_str += to_string(client.pin_code) + DELIMITER;
@@ -130,7 +130,7 @@ vector<string> loadDataFromFile(const string& file_name) {
 }
 
 // Searches for a client by account number and returns the index
-short findValidAccount(vector<string>& file_data, string account_number) {
+short findValidAccount(vector<string>& file_data,const string& account_number) {
 	for (int i{}; i < file_data.size(); i++) {
 		vector <string> parsed_data = parseRecordData(file_data.at(i));
 		if (parsed_data.front() == account_number) return i;
@@ -139,7 +139,7 @@ short findValidAccount(vector<string>& file_data, string account_number) {
 }
 
 // Converts a single file line to ClientData structure
-ClientData convertLineToClientData(string& file_data) {
+ClientData convertLineToClientData(const string& file_data) {
 	ClientData client{};
 	vector<string> client_fields = parseRecordData(file_data);
 	client = { client_fields.at(0) ,(unsigned short)stoi(client_fields.at(1)),
@@ -199,7 +199,7 @@ void displayClientData() {
 }
 
 // Saves record data to the file
-void saveRecordDataToFile(const string& file_name, string& record_data_str) {
+void saveRecordDataToFile(const string& file_name,const string& record_data_str) {
 	ofstream output_file(file_name, ios::app);
 	if (output_file) output_file << record_data_str << endl;
 }
@@ -237,9 +237,9 @@ void deleteClientAccount() {
 		clients.erase(clients.begin() + required_account);
 		deleteFileContents(CLIENT_FILE_NAME);
 
-		for (size_t i = 0; i < clients.size(); i++) {
-			string client{ serializeClientData(clients.at(i)) };
-			saveRecordDataToFile(CLIENT_FILE_NAME, client);
+		for (auto& client : clients) {
+			string client_str{ serializeClientData(client) };
+			saveRecordDataToFile(CLIENT_FILE_NAME, client_str);
 		}
 	}
 }
@@ -272,9 +272,10 @@ void updateClientData() {
 	if (getUserApproval("Are You Sure You Want Update?: ")) {
 		editClientData(clients.at(required_account));
 		deleteFileContents(CLIENT_FILE_NAME);
-		for (size_t i = 0; i < clients.size(); i++) {
-			string client{ serializeClientData(clients.at(i)) };
-			saveRecordDataToFile(CLIENT_FILE_NAME, client);
+
+		for (auto& client : clients) {
+			string client_str{ serializeClientData(client) };
+			saveRecordDataToFile(CLIENT_FILE_NAME, client_str);
 		}
 	}
 }
@@ -282,13 +283,16 @@ void updateClientData() {
 // Displays all client records from the file
 void displayAllClientRecords(ifstream& input_file) {
 	string line;
-	for (short i = 1; getline(input_file, line); i++) {
+
+	short i = 1;
+	while (getline(input_file, line)) {
 		vector<string> parsed_data = parseRecordData(line);
 		cout << "| " << setw(20) << left << to_string(i) + '.' + parsed_data.at(0);
 		cout << "| " << setw(15) << left << parsed_data.at(1);
 		cout << "| " << setw(30) << left << parsed_data.at(2);
 		cout << "| " << setw(15) << left << parsed_data.at(3);
 		cout << "| " << setw(29) << left << parsed_data.at(4) << '|' << endl;
+		i++;
 	}
 }
 
@@ -882,11 +886,11 @@ void userList(const UserInfo& user) {
 
 // Prints the login page interface
 void printLoginPage() {
-	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=') << '=' << createSeparatorLine(' ', 10) << setw(30) << '=' << setfill(' ') << endl;
-	cout << createSeparatorLine(' ', 24) << "||" << createSeparatorLine(' ', 11) << "Client" << createSeparatorLine(' ', 9) << "||" << createSeparatorLine(' ', 10) << "||"
-		<< createSeparatorLine(' ', 12) << "User" << createSeparatorLine(' ', 10) << "||" << endl;
-	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=') << '=' << createSeparatorLine(' ', 10) << setw(30) << '=' << setfill(' ') << "\n\n";
-	cout << createSeparatorLine(' ', 13) << setw(90) << setfill('-') << '-' << setfill(' ') << endl;
+	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=') << '='          << createSeparatorLine(' ', 10) << setw(30) << '='     << setfill(' ') << endl;
+	cout << createSeparatorLine(' ', 24) << "||"     << createSeparatorLine(' ', 11) << "Client" << createSeparatorLine(' ', 9)  << "||"    << createSeparatorLine(' ', 10) << "||"
+		 << createSeparatorLine(' ', 12) << "User"   << createSeparatorLine(' ', 10) << "||"     << endl;
+	cout << createSeparatorLine(' ', 24) << setw(30) << setfill('=')                 << '='      << createSeparatorLine(' ', 10) << setw(30) << '=' << setfill(' ') << "\n\n";
+	cout << createSeparatorLine(' ', 13) << setw(90) << setfill('-')                 << '-'      << setfill(' ') << endl;
 	cout << createSeparatorLine(' ', 13);
 }
 
@@ -983,9 +987,7 @@ void quickWithdraw(ClientData& client) {
 			}
 		}
 		else {
-			cout << setw(20) << setfill('+') << '+' << setfill(' ') << endl;
-			cout << "Choice from [1] -> [8]: " << endl;
-			cout << setw(20) << setfill('+') << '+' << setfill(' ') << endl;
+			displayErrorMessage("Choice from[1] ->[8]!!");
 		}
 	} while (getUserApproval("Do You Need Withdraw More?"));
 }
@@ -1107,7 +1109,11 @@ void loginPage() {
 	printEndMessage();
 }
 
+#include <format>
+
 int main() {
 	loginPage();
+
+	
 	return 0;
 }
